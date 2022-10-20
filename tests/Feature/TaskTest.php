@@ -9,10 +9,8 @@ use App\Models\Task;
 class TaskTest extends TestCase
 {
     use RefreshDatabase;
-    /**
-     * @test
-     */
-    public function 一覧を取得()
+
+    public function test_get_list()
     {
         $tasks = Task::factory()->count(10)->create();
 
@@ -21,5 +19,20 @@ class TaskTest extends TestCase
         $response
             ->assertOk()
             ->assertJsonCount($tasks->count());
+    }
+    /**
+     * @test
+     */
+    public function can_be_createed()
+    {
+        $data = [
+            'title' => 'テスト投稿'
+        ];
+
+        $response = $this->postJson("api/tasks", $data);
+
+        dd($response->json());
+        // $response
+        //     ->assertStatus(201);
     }
 }
