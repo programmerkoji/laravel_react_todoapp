@@ -1,4 +1,5 @@
 import React from "react";
+import { useUpdateDoneTask } from "../../../queries/TaskQuery";
 import { Task } from "../../../types/Task";
 
 type Props = {
@@ -6,10 +7,16 @@ type Props = {
 };
 
 const TaskItem: React.VFC<Props> = ({ task }) => {
+    const updoneTask = useUpdateDoneTask();
+
     return (
-        <li>
+        <li className={task.is_done ? "done" : ""}>
             <label className="checkbox-label">
-                <input type="checkbox" className="checkbox-input" />
+                <input
+                    type="checkbox"
+                    className="checkbox-input"
+                    onClick={() => updoneTask.mutate(task)}
+                />
             </label>
             <div>
                 <span>{task.title}</span>

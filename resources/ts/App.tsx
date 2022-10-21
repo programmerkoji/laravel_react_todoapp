@@ -1,8 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import {QueryClient, QueryClientProvider} from "react-query"
-
 import Router from './router/router'
+import { QueryClient, QueryClientProvider } from "react-query"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const App: React.VFC = () => {
     const queryClient = new QueryClient({
@@ -18,6 +19,7 @@ const App: React.VFC = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <Router />
+            <ToastContainer hideProgressBar={true} />
         </QueryClientProvider>
     )
 };
