@@ -2450,14 +2450,91 @@ exports["default"] = TaskInput;
 "use strict";
 
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 var jsx_runtime_1 = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+var react_1 = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+var react_toastify_1 = __webpack_require__(/*! react-toastify */ "./node_modules/react-toastify/dist/react-toastify.js");
 var TaskQuery_1 = __webpack_require__(/*! ../../../queries/TaskQuery */ "./resources/ts/queries/TaskQuery.ts");
 var TaskItem = function TaskItem(_ref) {
   var task = _ref.task;
   var updoneTask = (0, TaskQuery_1.useUpdateDoneTask)();
+  var updateTask = (0, TaskQuery_1.useUpdateTask)();
+  var deleteTask = (0, TaskQuery_1.useDeleteTask)();
+  var _ref2 = (0, react_1.useState)(undefined),
+    _ref3 = _slicedToArray(_ref2, 2),
+    editTitle = _ref3[0],
+    setEditTitle = _ref3[1];
+  var handleToggleEdit = function handleToggleEdit() {
+    setEditTitle(task.title);
+  };
+  var handleOnKey = function handleOnKey(e) {
+    if (["Escape", "Tab"].includes(e.key)) {
+      setEditTitle(undefined);
+    }
+  };
+  var handleInputChange = function handleInputChange(e) {
+    setEditTitle(e.target.value);
+  };
+  var handleUpdate = function handleUpdate(e) {
+    e.preventDefault();
+    if (!editTitle) {
+      react_toastify_1.toast.error('タイトルを入力してください。');
+      return;
+    }
+    var newTask = Object.assign({}, task);
+    newTask.title = editTitle;
+    updateTask.mutate({
+      id: task.id,
+      task: newTask
+    });
+    setEditTitle(undefined);
+  };
+  var itemInput = function itemInput() {
+    return (0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, {
+      children: [(0, jsx_runtime_1.jsx)("form", Object.assign({
+        onSubmit: handleUpdate
+      }, {
+        children: (0, jsx_runtime_1.jsx)("input", {
+          type: "text",
+          className: "input",
+          defaultValue: editTitle,
+          onKeyDown: handleOnKey,
+          onChange: handleInputChange
+        })
+      })), (0, jsx_runtime_1.jsx)("button", Object.assign({
+        className: "btn",
+        onClick: handleUpdate
+      }, {
+        children: "\u66F4\u65B0"
+      }))]
+    });
+  };
+  var itemText = function itemText() {
+    return (0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, {
+      children: [(0, jsx_runtime_1.jsx)("div", Object.assign({
+        onClick: handleToggleEdit
+      }, {
+        children: (0, jsx_runtime_1.jsx)("span", {
+          children: task.title
+        })
+      })), (0, jsx_runtime_1.jsx)("button", Object.assign({
+        className: "btn is-delete",
+        onClick: function onClick() {
+          return deleteTask.mutate(task.id);
+        }
+      }, {
+        children: "\u524A\u9664"
+      }))]
+    });
+  };
   return (0, jsx_runtime_1.jsxs)("li", Object.assign({
     className: task.is_done ? "done" : ""
   }, {
@@ -2471,15 +2548,7 @@ var TaskItem = function TaskItem(_ref) {
           return updoneTask.mutate(task);
         }
       })
-    })), (0, jsx_runtime_1.jsx)("div", {
-      children: (0, jsx_runtime_1.jsx)("span", {
-        children: task.title
-      })
-    }), (0, jsx_runtime_1.jsx)("button", Object.assign({
-      className: "btn is-delete"
-    }, {
-      children: "\u524A\u9664"
-    }))]
+    })), editTitle === undefined ? itemText() : itemInput()]
   }));
 };
 exports["default"] = TaskItem;
@@ -2676,9 +2745,18 @@ var useUpdateTask = function useUpdateTask() {
       queryClient.invalidateQueries("tasks"); //コンポーネントを再描画することができる
       react_toastify_1.toast.success("更新に成功しました。");
     },
-    onError: function onError() {
-      //エラーが発生したときに実行されるメソッド
-      react_toastify_1.toast.error("更新に失敗しました。");
+    onError: function onError(error) {
+      var _a, _b;
+      if ((_a = error.response) === null || _a === void 0 ? void 0 : _a.data.errors) {
+        Object.values((_b = error.response) === null || _b === void 0 ? void 0 : _b.data.errors).map(function (messages) {
+          messages.map(function (message) {
+            react_toastify_1.toast.error(message);
+          });
+        });
+      } else {
+        //エラーが発生したときに実行されるメソッド
+        react_toastify_1.toast.error("更新に失敗しました。");
+      }
     }
   });
 };

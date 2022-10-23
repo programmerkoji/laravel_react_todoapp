@@ -58,9 +58,19 @@ const useUpdateTask = () => {
             queryClient.invalidateQueries("tasks"); //コンポーネントを再描画することができる
             toast.success("更新に成功しました。");
         },
-        onError: () => {
-            //エラーが発生したときに実行されるメソッド
-            toast.error("更新に失敗しました。");
+        onError: (error: AxiosError) => {
+            if (error.response?.data.errors) {
+                Object.values(error.response?.data.errors).map(
+                    (messages: any) => {
+                        messages.map((message: string) => {
+                            toast.error(message);
+                        });
+                    }
+                );
+            } else {
+                //エラーが発生したときに実行されるメソッド
+                toast.error("更新に失敗しました。");
+            }
         },
     });
 };
