@@ -2797,11 +2797,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 var jsx_runtime_1 = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+var react_1 = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 var help_1 = __importDefault(__webpack_require__(/*! ../pagaes/help */ "./resources/ts/pagaes/help/index.tsx"));
 var login_1 = __importDefault(__webpack_require__(/*! ../pagaes/login */ "./resources/ts/pagaes/login/index.tsx"));
 var tasks_1 = __importDefault(__webpack_require__(/*! ../pagaes/tasks */ "./resources/ts/pagaes/tasks/index.tsx"));
 var Router = function Router() {
+  (0, react_1.useEffect)(function () {}, []);
   return (0, jsx_runtime_1.jsx)(react_router_dom_1.BrowserRouter, {
     children: (0, jsx_runtime_1.jsxs)("div", {
       children: [(0, jsx_runtime_1.jsx)("header", Object.assign({

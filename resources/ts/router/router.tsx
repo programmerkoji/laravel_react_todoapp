@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 
 import HelpPage from "../pagaes/help";
@@ -6,6 +6,11 @@ import LoginPage from "../pagaes/login";
 import TaskPage from "../pagaes/tasks";
 
 const Router = () => {
+
+    useEffect(() => {
+
+    }, [])
+
     return (
         <BrowserRouter>
             <div>
